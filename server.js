@@ -1,23 +1,4 @@
-import express from "express";
-import { createServer } from "http";
-import { Server } from "socket.io";
-import fs from "fs";
-import dotenv from "dotenv";
-
-dotenv.config();
-const PORT = process.env.PORT || 3000;
-const MODE_DEFAULT = process.env.MODE_DEFAULT || "party";
-
-const story = JSON.parse(fs.readFileSync("./story/chapter1.json", "utf8"));
-
-const app = express();
-const httpServer = createServer(app);
-const io = new Server(httpServer);
-
-app.use(express.static("web"));
-
-let sessions = {}; // { sessionId: { players: {}, node: "" } }
-
+// ...top stays the same
 io.on("connection", (socket) => {
   socket.on("joinSession", ({ sessionId, player }) => {
     if (!sessions[sessionId]) {
@@ -26,7 +7,13 @@ io.on("connection", (socket) => {
     sessions[sessionId].players[socket.id] = { id: socket.id, player, node: story.startNode };
     socket.join(sessionId);
 
-    io.to(sessionId).emit("sessionState", sessions[sessionId]);
+    const nodeId = sessions[sessionId].node;
+    // ⬇️ send both nodeId and full node object
+    io.to(sessionId).emit("sessionState", {
+      ...sessions[sessionId],
+      nodeId,
+      node: story.nodes[nodeId]
+    });
   });
 
   socket.on("makeChoice", ({ sessionId, choiceId }) => {
@@ -38,14 +25,13 @@ io.on("connection", (socket) => {
     if (!choice) return;
 
     session.node = choice.leadsTo;
-    io.to(sessionId).emit("newNode", { nodeId: session.node, node: story.nodes[session.node] });
+    const nodeId = session.node;
+    // ⬇️ also send full node here (was already close to this)
+    io.to(sessionId).emit("newNode", { nodeId, node: story.nodes[nodeId] });
   });
 
   socket.on("disconnect", () => {
-    for (let sid in sessions) {
-      delete sessions[sid].players[socket.id];
-    }
+    for (let sid in sessions) delete sessions[sid].players[socket.id];
   });
 });
-
-httpServer.listen(PORT, () => console.log(`COTM server running on ${PORT}`));
+// ...rest stays the same
