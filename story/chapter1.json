@@ -1,0 +1,43 @@
+{
+  "meta": { "id": "chapter1", "title": "The Heist Begins" },
+  "startNode": "bank_intro",
+  "nodes": {
+    "bank_intro": {
+      "type": "narration",
+      "speaker": "Narrator",
+      "text": "You're outside First National Bank in New Horizon City. Neon rain. Your crew waits.",
+      "choices": [
+        { "id": "A", "label": "Move in confidently", "leadsTo": "vault_path" },
+        { "id": "B", "label": "Proceed with caution", "leadsTo": "roof_path" },
+        { "id": "C", "label": "Go in hard and fast", "leadsTo": "alarm_path" }
+      ]
+    },
+    "vault_path": {
+      "type": "scene",
+      "speaker": "Vincent",
+      "text": "Everyone knows their role. No mistakes.",
+      "choices": [
+        { "id": "A", "label": "Rachel cracks the vault", "leadsTo": "vault_open" },
+        { "id": "B", "label": "Elaria scouts security", "leadsTo": "cam_room" }
+      ]
+    },
+    "roof_path": {
+      "type": "scene",
+      "speaker": "Elaria",
+      "text": "Rooftop vents hum. Guards rotate every ninety seconds.",
+      "choices": [
+        { "id": "A", "label": "Sneak into ventilation", "leadsTo": "vent_crawl" },
+        { "id": "B", "label": "Rappel to skylight", "leadsTo": "skylight" }
+      ]
+    },
+    "alarm_path": {
+      "type": "scene",
+      "speaker": "Narrator",
+      "text": "You kick the door. Sirens erupt. Drones wake.",
+      "choices": [
+        { "id": "A", "label": "Fight through", "leadsTo": "drone_fight" },
+        { "id": "B", "label": "Fallback to alley", "leadsTo": "alley_escape" }
+      ]
+    }
+  }
+}
